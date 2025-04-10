@@ -1,8 +1,7 @@
-import { authMiddleware } from "@clerk/nextjs/server";
+import { authMiddleware } from "@clerk/nextjs"; 
 
 export default authMiddleware();
 
 export const config = {
-  matcher: ["/((?!_next|api|favicon.ico).*)"],
-  runtime: 'nodejs',
+  matcher: ["/((?!_next|api|favicon.ico).*)"], 
 };
