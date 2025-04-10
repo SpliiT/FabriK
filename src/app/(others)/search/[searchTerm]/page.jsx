@@ -2,7 +2,6 @@ import Post from '@/components/Post';
 import Link from 'next/link';
 import { HiArrowLeft } from 'react-icons/hi';
 
-
 export default async function SearchPage({ params }) {
   let data = null;
   try {
@@ -32,7 +31,9 @@ export default async function SearchPage({ params }) {
         </h1>
       </div>
       {data && data.length === 0 && (
-        <h1 className='text-center pt-6 text-2xl'>Aucun résultat pour "{decodeURIComponent(params.searchTerm)}"</h1>
+        <h1 className='text-center pt-6 text-2xl'>
+          Aucun résultat pour &quot;{decodeURIComponent(params.searchTerm)}&quot;
+        </h1>
       )}
 
       {data && data.map((post) => <Post key={post._id} post={post}></Post>)}
