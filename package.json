@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^5.7.1",
+    "atom": "^1.4.2",
     "axios": "^1.8.4",
     "firebase": "^10.14.0",
     "framer-motion": "^12.6.3",
