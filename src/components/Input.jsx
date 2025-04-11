@@ -4,9 +4,9 @@ import { useUser } from '@clerk/nextjs';
 import { HiOutlinePhotograph } from 'react-icons/hi';
 import { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
-import cloudinaryConfig from '../cloudinary'; // Assurez-vous que le chemin est correct
+import cloudinaryConfig from '../cloudinary'; 
 
-export default function Input() {
+export default function Input({ addPost }) {
   const { user, isSignedIn, isLoaded } = useUser();
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -19,7 +19,6 @@ export default function Input() {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
-      // Utilisez l'URL locale pour l'affichage immédiat
       setImageFileUrl(URL.createObjectURL(file));
     }
   };
@@ -39,11 +38,8 @@ export default function Input() {
         formData
       );
 
-      // Vérifiez la réponse de Cloudinary
-      console.log('Cloudinary response:', response.data);
-
       const { secure_url: url } = response.data;
-      setImageFileUrl(url); // Mettez à jour avec l'URL de Cloudinary
+      setImageFileUrl(url);
       setImageFileUploading(false);
     } catch (error) {
       console.error('Cloudinary error:', error);
@@ -73,11 +69,16 @@ export default function Input() {
         image: imageFileUrl,
       }),
     });
+
+    if (response.ok) {
+      const newPost = await response.json();
+      addPost(newPost); // Utilisez la fonction addPost pour ajouter le nouveau post
+      setText('');
+      setSelectedFile(null);
+      setImageFileUrl(null);
+    }
+
     setPostLoading(false);
-    setText('');
-    setSelectedFile(null);
-    setImageFileUrl(null);
-    location.reload();
   };
 
   if (!isSignedIn || !isLoaded) {
