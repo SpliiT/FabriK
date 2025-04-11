@@ -1,0 +1,3 @@
+ngrok config add-authtoken 2vUcObjU7FwhtWEP7oioF8BLpLU_4JEWNLASd4stEppbWaCgP
+
+ngrok http http://localhost:3000

@@ -3,13 +3,8 @@
 import { useUser } from '@clerk/nextjs';
 import { HiOutlinePhotograph } from 'react-icons/hi';
 import { useRef, useState, useEffect } from 'react';
-import { app } from '../firebase';
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from 'firebase/storage';
+import axios from 'axios';
+import cloudinaryConfig from '../cloudinary'; 
 
 export default function Input() {
   const { user, isSignedIn, isLoaded } = useUser();
@@ -19,13 +14,6 @@ export default function Input() {
   const [text, setText] = useState('');
   const [postLoading, setPostLoading] = useState(false);
   const imagePickRef = useRef(null);
-  const [storage, setStorage] = useState(null);
-
-  useEffect(() => {
-    if (app) {
-      setStorage(getStorage(app));
-    }
-  }, [app]);
 
   const addImageToPost = (e) => {
     const file = e.target.files[0];
@@ -35,44 +23,34 @@ export default function Input() {
     }
   };
 
-  const uploadImageToStorage = async () => {
-    if (!storage || !selectedFile) return;
+  const uploadImageToCloudinary = async () => {
+    if (!selectedFile) return;
 
     setImageFileUploading(true);
     try {
-      const fileName = new Date().getTime() + '-' + selectedFile.name;
-      const storageRef = ref(storage, fileName);
-      const uploadTask = uploadBytesResumable(storageRef, selectedFile);
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('upload_preset', cloudinaryConfig.upload_preset);
+      formData.append('api_key', cloudinaryConfig.api_key);
 
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log('Upload is ' + progress + '% done');
-        },
-        (error) => {
-          console.error('Upload error:', error);
-          setImageFileUploading(false);
-        },
-        async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          // Utiliser downloadURL pour créer le post
-          setImageFileUrl(downloadURL);
-          setImageFileUploading(false);
-        }
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloud_name}/image/upload`,
+        formData
       );
+      const { url } = response.data;
+      setImageFileUrl(url);
+      setImageFileUploading(false);
     } catch (error) {
-      console.error('Storage error:', error);
+      console.error('Cloudinary error:', error);
       setImageFileUploading(false);
     }
   };
 
   useEffect(() => {
-    if (selectedFile && storage) {
-      uploadImageToStorage();
+    if (selectedFile) {
+      uploadImageToCloudinary();
     }
-  }, [selectedFile, storage]);
+  }, [selectedFile]);
 
   const handleSubmit = async () => {
     setPostLoading(true);

@@ -17,8 +17,8 @@ export default async function Home() {
     console.error('Error fetching posts:', error);
   }
   return (
-    <div className='min-h-screen max-w-xl mx-auto border border-gray-300/10'>
-      <div className='py-2 px-3 sticky top-0 z-50 bg-red border border-gray-300/10'>
+    <div className='min-h-screen max-w-xl mx-auto border border-neutral-900'>
+      <div className='py-2 px-3 sticky top-0 z-50 bg-black border-b border-l border-neutral-900'>
         <h2 className='text-lg sm:text-xl font-bold'>Accueil</h2>
       </div>
       <Input />
