@@ -4,7 +4,7 @@ import { useUser } from '@clerk/nextjs';
 import { HiOutlinePhotograph } from 'react-icons/hi';
 import { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
-import cloudinaryConfig from '../cloudinary'; 
+import cloudinaryConfig from '../cloudinary'; // Assurez-vous que le chemin est correct
 
 export default function Input() {
   const { user, isSignedIn, isLoaded } = useUser();
@@ -19,6 +19,7 @@ export default function Input() {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
+      // Utilisez l'URL locale pour l'affichage immédiat
       setImageFileUrl(URL.createObjectURL(file));
     }
   };
@@ -37,8 +38,12 @@ export default function Input() {
         `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloud_name}/image/upload`,
         formData
       );
-      const { url } = response.data;
-      setImageFileUrl(url);
+
+      // Vérifiez la réponse de Cloudinary
+      console.log('Cloudinary response:', response.data);
+
+      const { secure_url: url } = response.data;
+      setImageFileUrl(url); // Mettez à jour avec l'URL de Cloudinary
       setImageFileUploading(false);
     } catch (error) {
       console.error('Cloudinary error:', error);
@@ -94,7 +99,7 @@ export default function Input() {
           value={text}
           onChange={(e) => setText(e.target.value)}
         ></textarea>
-        {selectedFile && (
+        {imageFileUrl && (
           <img
             onClick={() => {
               setSelectedFile(null);
