@@ -6,7 +6,7 @@ import {
   HiOutlineTrash,
   HiHeart,
 } from 'react-icons/hi';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { modalAtom, postIdAtom } from '@/atom/modalAtom';
@@ -21,6 +21,7 @@ export default function Icons({ post, id, onUpdate }) {
   const router = useRouter();
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const modalRef = useRef(null);
 
   const likePost = async () => {
     if (!user) return router.push('/sign-in');
@@ -66,13 +67,30 @@ export default function Icons({ post, id, onUpdate }) {
 
       if (!res.ok) throw new Error('Failed to delete post');
 
-      if (onUpdate) onUpdate(); 
+      if (onUpdate) onUpdate();
     } catch (error) {
       console.error('Error deleting post:', error);
     } finally {
       setShowDeleteModal(false);
     }
   };
+
+  // 🔁 Fermer la modale si clic en dehors
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setShowDeleteModal(false);
+      }
+    };
+
+    if (showDeleteModal) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDeleteModal]);
 
   return (
     <>
@@ -121,7 +139,10 @@ export default function Icons({ post, id, onUpdate }) {
 
       {showDeleteModal && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
-          <div className='bg-black border border-gray-700 rounded-xl shadow-lg p-12 w-full max-w-sm text-center'>
+          <div
+            ref={modalRef}
+            className='bg-black border border-gray-700 rounded-xl shadow-lg p-12 w-full max-w-sm text-center'
+          >
             <h2 className='text-xl font-semibold mb-4'>
               Voulez vous vraiment supprimer ce post ?
             </h2>

@@ -10,7 +10,7 @@ export default function News() {
 
   useEffect(() => {
     fetch(
-      `https://newsapi.org/v2/top-headlines?q=tech&apiKey=${process.env.NEXT_PUBLIC_NEWS_API_KEY}`
+      `https://newsapi.org/v2/top-headlines?q=tech&apiKey=${process.env.NEXT_PUBLIC_NEWS_API_KEY ?? ''}`
     )
       .then((res) => res.json())
       .then((data) => {
